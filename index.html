@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Göksal seni çok seviyorum</title>
+<style>
+  :root {
+    --bg: #0c0f10;
+    --text: #e6ffe6;
+    --heart: #28c76f;
+  }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: radial-gradient(1200px 800px at 70% 20%, #0f1416, var(--bg));
+    color: var(--text);
+    overflow: hidden;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  .sky {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .heart {
+    position: absolute;
+    font-size: 24px;
+    will-change: transform, opacity;
+    filter: drop-shadow(0 4px 8px rgba(40,199,111,.35));
+    opacity: 0;
+    animation:
+      float var(--floatDur) linear var(--delay) infinite,
+      pulse var(--pulseDur) ease-in-out var(--delay) infinite;
+  }
+
+  .center {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .title {
+    font-weight: 800;
+    font-size: clamp(28px, 6vw, 64px);
+    text-shadow: 0 2px 6px rgba(0,0,0,.45),
+                 0 0 24px rgba(40,199,111,.35);
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.35); }
+  }
+
+  @keyframes float {
+    0%   { opacity: 0; transform: translate3d(var(--startX), 100vh, 0) scale(var(--scale)); }
+    10%  { opacity: .9; }
+    100% { opacity: 0; transform: translate3d(var(--endX), -15vh, 0) scale(var(--scale)); }
+  }
+</style>
+</head>
+<body>
+  <div class="sky" id="sky"></div>
+  <div class="center">
+    <div class="title">Göksal seni çok seviyorum 💚</div>
+  </div>
+
+<script>
+  const SKY = document.getElementById('sky');
+  const INITIAL_HEARTS = 70;
+  const MAX_CONCURRENT = 120;
+  const SPAWN_INTERVAL_MS = 450;
+
+  function rand(min, max) { return Math.random() * (max - min) + min; }
+
+  function createHeart() {
+    const el = document.createElement('span');
+    el.className = 'heart';
+    el.textContent = '💚';
+
+    const startX = `${rand(-10, 110).toFixed(2)}vw`;
+    const endX   = `${(parseFloat(startX) + rand(-15, 15)).toFixed(2)}vw`;
+    const scale  = rand(0.6, 1.6).toFixed(2);
+    const floatDur = rand(9, 17).toFixed(2) + 's';
+
+    // 🔥 geniş aralık: bazıları çok hızlı, bazıları yavaş büyüyüp küçülür
+    const pulseDur = rand(0.8, 4.5).toFixed(2) + 's';
+
+    const delay    = rand(0, 6).toFixed(2) + 's';
+
+    el.style.setProperty('--startX', startX);
+    el.style.setProperty('--endX', endX);
+    el.style.setProperty('--scale', scale);
+    el.style.setProperty('--floatDur', floatDur);
+    el.style.setProperty('--pulseDur', pulseDur);
+    el.style.setProperty('--delay', delay);
+
+    setTimeout(() => el.remove(), parseFloat(floatDur) * 1000 + parseFloat(delay) * 1000);
+    return el;
+  }
+
+  for (let i = 0; i < INITIAL_HEARTS; i++) {
+    SKY.appendChild(createHeart());
+  }
+
+  setInterval(() => {
+    if (SKY.childElementCount < MAX_CONCURRENT) {
+      SKY.appendChild(createHeart());
+    }
+  }, SPAWN_INTERVAL_MS);
+</script>
+</body>
+</html>
